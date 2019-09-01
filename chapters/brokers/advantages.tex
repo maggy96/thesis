@@ -1,0 +1,34 @@
+\label{Message Broker:advantages}
+\section{Vorteile}
+Durch die beschriebene Architektur einer nachrichtenorientierten Middleware
+ergeben sich einige Vorteile gegenüber direktem Messaging. Neben den bereits
+erwähnten sind dies die Folgenden.
+
+\paragraph{Skalierbarkeit}
+Durch die Extraktion des Messagings in eine externe Instanz kann nicht nur das
+Routing effizienter, simpler und performanter geschehen, es können auch weitere
+Empfänger und Sender einfacher eingebunden werden und die Netzwerktopologie wird
+vereinfacht. Weiter können bei den meisten Implementierungen Redundanz
+herbeigeführt und somit höhere Lasten bewältigt werden. Auf diese Weise kann beim
+Erweitern der Anwendung sehr einfach die nachrichtenorientierte Middleware mit
+skaliert werden \cite{curry2004message}.
+\paragraph{Flexibilität}
+Da die meisten Message Broker Clients für viele Programmiersprachen anbieten
+und auf mehreren Plattformen betrieben werden können, wird eine große Flexibilität
+erzielt. Dabei müssen die Empfänger und Sender nicht zwingend das gleiche
+Protokoll verwenden \cite{dobbelaere2017kafka}.
+\paragraph{Stabilität}
+Gerade durch Verwendung von Queues kann eine erhöhte Stabilität erreicht werden.
+Sollte ein Sender ausfallen, ist dies für die weitere asynchrone Verarbeitung
+der Nachricht nicht relevant, solange diese vorher an den Broker übermittelt
+wurde. Auch der Empfänger kann ausfallen, solange die Queue die Nachricht lange
+genug vorhalten kann. Je nach Implementierung ist sogar der Broker ausfallsicher,
+da durch Mechanismen wie Redundanz eine Unabhängigkeit von der Hardware erreicht wird \cite{dobbelaere2017kafka}.
+\paragraph{Kohäsion und Kopplung}
+Da bei direkter Kommunikation jeweils ein Client den anderen direkt aufruft,
+sind die zwei Systeme eng miteinander verknüpft. Sollten sich Teile ändern oder
+wegfallen, so müssen diese Änderungen durch das komplette Netzwerk propagiert werden.
+Aufgrund dieses sehr statischen Aufbaus liegt eine hohe Kopplung vor.
+Durch die Verwendung einer MOM wird die Aufgabe des Messagings komplett auf eine
+eigene Instanz verschoben. Somit wird eine enge Kohäsion und eine geringe
+Kopplung erzielt \cite{curry2004message}.

@@ -1,0 +1,124 @@
+\section{Eigenschaften einer nachrichtenorientierten Middleware}
+\label{formal}
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|l|l|}
+    \hline
+    \textbf{Eigenschaft} & \textbf{Optionen} \\ \hline
+    Standardisierte Protokolle & AMQP, MQPP, - \\ \hline
+    Clientbibliotheken & siehe \ref{compability:table}\\ \hline
+    Möglichkeit zur Skalierung & Replikation, - \\ \hline
+    Durchsatz & hoch, niedrig \\ \hline
+    Latenz & stabil, nicht stabil \\ \hline
+    Routingoptionen & Topic, Channel, Content, Statisch \\ \hline
+    Zustellgarantien & at most once, at least once, exactly once \\ \hline
+    Speicherort & RAM, Festplatte \\ \hline
+    Langzeitspeicherung & unterstützt, nicht unterstützt \\ \hline
+    Ordnungsgarantien & total order, partitioned order, no order \\ \hline
+
+  \end{tabular}
+  \caption{Eigenschaftenkatalog}
+  \label{catalogue}
+\end{table}
+
+Nach den Erkenntnissen des vorherigen Abschnitts können nun Eigenschaften
+einer MOM erarbeitet werden, die besonders zur Unterscheidung von
+Implementierungen geeignet sind. Hierbei wird anhand des im Abschnitt
+\ref{definition:definition} beschriebenen Aufbaus vorgegangen.
+Die erarbeiteten Eigenschaften sind in der Tabelle \ref{catalogue} zusammen mit
+den für die jeweiligen Eigenschaften verfügbaren Optionen dargestellt. Im
+Folgenden werden die einzelnen Punkte erklärt.
+Anschließend werden sie den folgenden Abschnitten dazu verwendet werden,
+einzelne Implementierungen zu analysieren und miteinander zu vergleichen.
+
+\subsection{Sender und Empfänger}
+Wie in den Grundlagen erwähnt, sind Producer und Consumer unabhängige Instanzen.
+Es ist jedoch nicht ausgeschlossen, dass Consumer gleichzeitig Producer sind und
+umgekehrt. Somit fließt in die Kriterien für die Auswahl von Brokern ein, welche
+Clients dieser unterstützen kann. 
+Dabei muss sowohl betrachtet werden, ob \textbf{standardisierte Protokolle}
+verwendet werden, als auch, wie leicht Clients in verbreiteten Sprachen
+implementiert werden können.
+Nach Statistiken von Github sind die 2018 am meisten verwendeten Sprachen in
+absteigender Reihenfolge Javascript, Java, Python, PHP, C++, C\#, Typescript,
+Shell, C und Ruby \cite{Octoverse:online}.
+Da Typescript auch Javascript Pakete verwenden kann und somit
+in diesem Kontext die Unterscheidung zwischen Javascript und Typescript
+irrelevant ist, sowie Shell für die meisten großen Softwarearchitekturen nicht
+infrage kommt, werden nur die anderen acht Sprachen zur Bewertung herangezogen. Dabei entfällt
+eine Bewertung der unterstützten Plattformen, da diese eher von den
+\textbf{Clientbibliotheken} bzw. den unterstützten Programmiersprachen abhängen.
+Diese sind in Tabelle \ref{compability:table} dargestellt.
+
+In einer Implementierung ist selbstverständlich auch die Zahl an
+gleichzeitig unterstützten Clients nicht unlimitiert. Sie hängt von mehreren
+Faktoren ab, allerdings kann man hierbei durchaus an die Grenzen einer
+Hardware stoßen.
+In den meisten Fällen wird daher Replikation angeboten
+\cite{ApacheKa84:online,RabbitMQ:online}. Das bedeutet, dass
+einige oder alle Daten der MOM in mehreren, unabhängigen Instanzen gespeichert
+und synchronisiert werden. Somit werden Implementierungen auf \textbf{Möglichkeit
+zur Skalierung} untersucht.
+
+Ebenso limitiert ist eine Implementierung darin, wie viele Nachrichten sie
+gleichzeitig versenden und empfangen kann, da hier Faktoren wie
+Hardwareressourcen und Netzwerk eine Rolle spielen.
+Relevante Metriken sind hierbei zum einen der \textbf{Durchsatz}, also die Menge
+von Nachrichten, die eine MOM pro Zeiteinheit verarbeiten kann, und zum anderen
+die \textbf{Latenz}, also die Versanddauer einer Nachricht. Diese Eigenschaften
+können beispielsweise in Echtzeitsystemen harte Anforderungen sein.
+
+\subsection{Routing}
+Wie bereits in Abschnitt \ref{definition:routing} erwähnt, unterscheidet
+man neben statischem Routing zwischen \textit{Channel-}, \textit{Topic-} und
+\textit{Content-} basiertem Routing. Daher werden diese \textbf{Routingoptionen}
+in den Eigenschaftenkatalog aufgenommen.
+
+Beim Versand können jedoch Netzwerkpakete verloren gehen, Clients oder Broker
+ausfallen, oder Antwortpakete verloren gehen, wodurch die Nachricht mehrfach
+oder gar nicht gesendet wird. Daher sollen Implementierungen auf
+\textbf{Zustellgarantien} untersucht werden.
+
+Bei \textbf{at most once} wird eine Nachricht maximal einmal zugestellt.
+Hierbei wird nicht berücksichtigt, ob eine Nachricht z.b. durch
+Paketverlust verloren geht. Eine weitere Variante ist
+\textbf{at least once}. Hierbei wird jede Nachricht garantiert zugestellt,
+allerdings kann es zu Mehrfachzustellungen kommen und es werden mehr Ressourcen
+benötigt. Die dritte Alternative \textbf{exactly once}, bei dem
+keine Nachricht verloren geht und auch keine Nachricht mehr als einmal zugestellt wird,
+ist von allen Varianten die ressourcenintensivste. \cite{dobbelaere2017kafka}
+
+\subsection{Queues}
+Da nicht jede Implementierung eine Queue verwendet, spielt diese nur bei Verwendung
+eine Rolle. Jedoch sind hier auch wieder Limitierungen von Hardware anzutreffen.
+So kann eine Queue nicht  unendlich viele Nachrichten speichern, da
+meist begrenzter Speicherplatz, insbesondere bei flüchtigen Speichermedien vorliegt.
+Werden Nachrichten beispielsweise nach dem Versand direkt wieder gelöscht, so wird
+natürlich weniger Speicher benötigt.
+Der \textbf{Speicherort} (etwa auf einer Festplatte oder im Arbeitsspeicher),
+und die Option zur \textbf{Langzeitspeicherung} sind also interessant.
+
+Da bei der Verwendung von Queues alle Nachrichten diese durchlaufen, ist
+außerdem relevant, ob die Reihenfolge dieser dabei erhalten wird. Man spricht
+in diesem Kontext von \textbf{Ordnungsgarantien}. Dabei kann eine MOM
+\textit{no order}, also keine Ordnungsgarantien, \textit{partitioned order}, also eine 
+Ordnungsgarantie über eine Teilmenge von Nachrichten, oder \textit{total order},
+also eine absolute Ordnung, anbieten. \cite{dobbelaere2017kafka}
+
+Über die erarbeiteten Punkte hinaus ist es schwer, Eigenschaften zu finden,
+in denen sich Implementierungen wesentlich unterscheiden. Die meisten aktuellen
+Implementierungen sind auf einen bestimmten Anwendungsfall ausgerichtet, was den
+Vergleich außerhalb genannter Eigenschaften erschwert \cite{kleppmann2017designing}.
+
+\begin{figure}[]
+	\begin{tabular}{l|llllllll}
+		Broker/Sprache                         & Javascript & Java & Python & PHP  & C++  & C\#  & C    & Ruby \\
+		\cline{1-9}
+		Kafka \cite{KafkaClients:online}       & (ja)       & ja   & (ja)   & (ja) & (ja) & (ja) & (ja) & (ja) \\
+		RabbitMQ \cite{RabbitMQClients:online} & (ja)       & ja   & (ja)   & (ja) & (ja) & ja   & ja   & (ja) \\
+		NSQ \cite{NSQ:online}                  & ja         & (ja) & ja     & (ja) & (ja) & ja   & (ja) & (ja) \\
+	\end{tabular}
+	\caption{Kompatibilitätsmatrix Message Broker. Drittanbieterbibliotheken in Klammern, soweit vom Hersteller empfohlen}
+	\label{compability:table}
+\end{figure}

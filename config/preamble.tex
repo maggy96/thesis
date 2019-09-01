@@ -1,0 +1,283 @@
+% ------------------------------------------------------------------
+% DOKUMENTEINSTELLUNGEN
+% ------------------------------------------------------------------
+\documentclass[
+paper=a4,           % Page dimensions
+fontsize=12pt,      % Schriftgröße 12 Punkt
+DIV=12,             % Teilungsfaktor für Satzspiegel
+listof=totoc,       % Tabellen & Abbildungsverzeichnis ins Inhaltsverzeichnis
+bibliography=totoc, % Literaturverzeichnis ins Inhaltsverzeichnis
+appendixprefix,   	% "Appendix" Prefix für Anhang
+headinclude,        % Kopfzeile mit in Satzspiegel aufnehmen
+twoside,            % Page margins for two-sided printing
+open=right,         % Begin new chapters on a right-hand side
+parskip,            % Space after last line of paragraph: 1em
+draft=false,        % Draft version?
+titlepage=on,       % Title at own page
+fleqn,              % Formulas left-aligned
+]{scrbook}          % oder {scrreprt}
+
+% Alle Überschriften fett und *mit* Serifen (normale Schriftart und Größe)
+\setkomafont{chapter}{\normalfont\bfseries\huge}
+\setkomafont{section}{\normalfont\bfseries\Large}
+\setkomafont{subsection}{\normalfont\bfseries\large}
+\setkomafont{subsubsection}{\normalfont\bfseries}
+
+% \usepackage{morewrites}
+\usepackage{scrwfile}
+
+% Repair some problems of komascript with other packages
+\usepackage{scrhack}
+
+% Custom page geometry
+\usepackage{geometry}
+
+\renewcommand{\textfraction}{0.01} % Minimum fraction of page for text
+\renewcommand{\topfraction}{0.99} % Fraction of page from top that may contain figures
+\renewcommand{\bottomfraction}{0.99} % Fraction of page from bottom that may contain figures
+\renewcommand{\floatpagefraction}{0.99} % Avoid separate pages that only contain figures
+
+% Page break before each section
+\let\oldsection = \section
+\renewcommand{\section}[1]{
+  \clearpage
+  \oldsection{#1}
+}
+
+% unterschiedliche linespaces (für die comments)
+\usepackage{setspace}
+
+% Handle page numbers on empty pages
+\makeatletter
+\def\cleardoublepage{\clearpage\if@twoside \ifodd\c@page\else
+  \hbox{}
+  \thispagestyle{empty} % no page number at empty pages
+  % \thispagestyle{plain} % page number at empty pages
+  \newpage
+  \if@twocolumn\hbox{}\newpage\fi\fi\fi}
+\makeatother
+
+% ------------------------------------------------------------------
+% ERWEITERUNGEN: SPRACHEINSTELLUNGEN
+% ------------------------------------------------------------------
+
+% Englische Spracheinstellung
+% \usepackage[ngerman]{babel}
+% Deutsche Spracheinstellung
+\usepackage[ngerman]{babel}
+
+% Kodierung
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% ------------------------------------------------------------------
+% ERWEITERUNGEN: ALLGEMEIN
+% ------------------------------------------------------------------
+
+% Packages to allow inclusion of graphics
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{caption}
+
+% For creating coloured text and background
+\usepackage[svgnames,rgb]{xcolor}
+
+% Unformatierten Text einfügen
+\usepackage{verbatim}
+
+\usepackage{url}
+
+% Einträge in PDF verlinken, keine Ränder
+\usepackage{hyperref}
+
+\hypersetup{
+% bookmarks=true,                              % show bookmarks bar?
+  bookmarksnumbered=true,
+  pdftitle={Vergleich aktueller Implementierungen von Message Oriented Middlewares},                % title
+  pdfauthor={Magnus Görlitz},                % author
+  pdfsubject={Thesis},                   % subject of the document
+  pdfkeywords={Modeling} {PubSub} {Message Broker}, % list of keywords
+  colorlinks=true,                             % false: boxed links; true: colored links
+  linkcolor=black,                             % color of internal links
+  citecolor=red,                               % color of links to bibliography
+  pdfborder={0 0 1}
+}
+
+% Provides a solution to the problem with hyperref that links
+% to floats actually anchor to the place below the float's caption,
+% instead of anchoring to the beginning of the float
+\usepackage[all]{hypcap}
+
+% EPS Grafiken einbinden
+\usepackage{epstopdf}
+
+% Decorative chapter headings | Muss nach xcolor geladen werden!
+\usepackage[grey, utopia]{quotchap}
+
+\usepackage{enumitem}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\usepackage{wrapfig} % Bilder mit Fließtext
+
+\usepackage{tikz}
+
+
+% ------------------------------------------------------------------
+% ERWEITERUNGEN: ZITATE UND REFERENZEN
+% ------------------------------------------------------------------
+
+% Context sensitive quotation facilities
+% Required by biblatex for multilingual quoting
+\usepackage{csquotes}
+
+% Use biblatex instead of bibtex -- it's the future.
+\usepackage[
+backend=biber,
+natbib=true,        % Provide aliases for natbib's citation commands
+citestyle=numeric,
+style=numeric
+]{biblatex}
+
+\addbibresource{bibliography/references.bib}
+
+% ------------------------------------------------------------------
+% ERWEITERUNGEN: MATH
+% ------------------------------------------------------------------
+
+% Typical maths resource packages
+\usepackage{amsmath,amssymb,amsfonts}
+
+% Intelligent cross-referencing
+\usepackage{cleveref}
+
+% Mathematical typesetting with the Palatino fonts
+\usepackage{mathpazo}
+
+% Capital handwriting letters for mathematical purposes
+% \usepackage{mathrsfs}
+
+% Mathematical symbol font that contains symbol for disjoint union
+\usepackage{MnSymbol}
+
+% AMS theorems
+\usepackage{amsthm}
+
+\usepackage{framed}
+% \usepackage[framed]{ntheorem}
+
+% darstellung mathematischer definitionen
+\usepackage{shadethm}
+
+
+% ------------------------------------------------------------------
+% ERWEITERUNGEN: TABLE
+% ------------------------------------------------------------------
+
+% Tables with variable column width
+\usepackage{tabularx}
+
+% Additional table commands for academic publications
+\usepackage{booktabs}
+
+% Rotate objects (used for vertical text in table cells)
+\usepackage{rotating}
+
+% Multilined table cells
+\usepackage{makecell}
+
+% Create tabular cells spanning multiple rows
+\usepackage{multirow}
+
+% Tables that span over several pages
+\usepackage{longtable}
+
+% ------------------------------------------------------------------
+% ERWEITERUNGEN: VERZEICHNISSE
+% ------------------------------------------------------------------
+
+% Code-Listings
+\usepackage{listings}
+\lstset{
+	basicstyle=\ttfamily\tiny,
+	tabsize=2,
+	breaklines=true,
+	frame=single,
+	captionpos=b,
+	showstringspaces=false,
+	numbers=left,
+	numberfirstline=false,
+	firstnumber=1,
+	stepnumber=2,
+	numbersep=5pt
+  }
+  
+% Glossary
+\usepackage[toc]{glossaries}
+\makeglossaries
+\loadglsentries{glossaries}
+
+% ------------------------------------------------------------------
+% KOPF-/FUSSZEILE
+% ------------------------------------------------------------------
+\renewcommand{\ttdefault}{lmtt} % bold texttt
+
+% Use KOMA-recommended package for header/footer style setup
+\usepackage[%
+headsepline, % Trennlinie zwischen Inhalt und Kopfzeile
+footsepline, % Trennlinie zwischen Inhalt und Fußzeile
+automark     % Automatischer Inhalt von Seitenüberschriften
+]{scrlayer-scrpage}
+
+\usepackage{textcase} % for \MakeTextLowercase
+
+\clearpairofpagestyles
+\lehead{\MakeTextLowercase{\textsc{\leftmark}}}
+\rohead{\MakeTextLowercase{\textsc{\rightmark}}}
+\ofoot{\pagemark}
+
+% Abstand zwischen Kopf-/Fußzeile und Trennlinie
+\chead{\rule[-\dimexpr \dp\strutbox+1ex\relax]{0pt}{\baselineskip}}
+\cfoot{\rule[-\dimexpr \dp\strutbox+1ex\relax]{0pt}{\baselineskip}}
+
+\addtokomafont{pageheadfoot}{\small\textcolor{gray!85}}
+\setkomafont{pagenumber}{\small\textcolor{gray!85}}
+
+% Separator line for headers/footers
+\KOMAoptions{headsepline=.4pt:\textwidth}
+\KOMAoptions{footsepline=.4pt:\textwidth}
+
+\setkomafont{headsepline}{\color{gray!75}}
+\setkomafont{footsepline}{\color{gray!75}}
+
+
+% beamer-style shaded text box with title
+\usepackage{tcolorbox}
+\usetikzlibrary{shadings,shadows}
+
+\newenvironment{frameblock}[1]{%
+  \tcolorbox[beamer,%
+  noparskip,breakable,
+  colback=LightGray,colframe=DarkGray,%
+  colbacklower=DarkBlue!75!LightBlue,%
+  title=#1]}%
+{\endtcolorbox}
+
+\newenvironment{frameblockk}[1]{%
+  \tcolorbox[beamer,%
+  noparskip,breakable,width=0.7\textwidth,
+  colback=LightGray,colframe=DarkGray,%
+  colbacklower=DarkBlue!75!LightBlue,%
+  title=#1]}%
+{\endtcolorbox}
+\usepackage{fancybox}
+% ------------------------------------------------------------------
+% KOMMANDOS
+% ------------------------------------------------------------------
+\input{config/constants}
+\input{config/commands}
+
+\RequirePackage[ngerman=ngerman-x-latest]{hyphsubst}
+\usepackage[graphicx]{realboxes}

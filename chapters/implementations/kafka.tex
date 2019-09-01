@@ -1,0 +1,101 @@
+\subsection{Apache Kafka}
+
+Apache Kafka, erstmals erschienen 2011, ist ein Open Source Projekt zur Verarbeitung
+von Datenströmen. Es wurde von der Firma LinkedIn entwickelt und später Teil der
+Apache Software Foundation.
+Es fokussiert sich auf sogenannte \textit{Streams} von Daten, also die Speicherung
+und Verarbeitung von Datenströmen. Zwar war Messaging nicht das Hauptziel bei
+der Entwicklung Kafkas, allerdings findet es große Verbreitung hierfür.
+Kafka bietet vereinfachte Skalierbarkeit durch Clustering. Diese Cluster können sich
+über mehrere physische Computer erstrecken \cite{ApacheKa84:online}.
+
+Kafka basiert auf einem simplen Topic-Routing und umfasst
+eine Queue, in der Messages gespeichert werden.
+Consumer können zusätzlich zum gewöhnlichen Publish-Subscribe Pattern die Nachrichten
+auch im Nachhinein noch beliebig aus der Queue abrufen.
+Dabei wird intern jede Nachricht an eine sogenannte \textit{Partition} angehängt.
+Dies ist nichts anderes als eine Queue mit einer FIFO-Konfiguration, allerdings
+wird während des Clustering unter Umständen eine identische Queue mehrmals
+vorgehalten. Auch kann es vorkommen, dass eine Partition für einen physischen
+Host zu groß wird, und auf mehrere Hosts aufgeteilt wird.
+Auf diese Weise ist Kafka sehr gut skalierbar.
+Weiter umfasst Kafka nicht nur APIs für Producer und Consumer, sondern auch für
+Streams. Diese können von Anwendungen zum Transformieren gesamter Streams verwendet
+werden, beispielsweise um von einem Topic nach Verarbeitung der Daten diese direkt
+an ein anderes Topic weiterzugeben. \cite{ApacheKa84:online}
+
+Kafka ist in Scala implementiert und läuft auf der Java Virtual Machine. Somit
+ist eine gewisse Plattformunabhängigkeit beim Hosting gegeben. Zum Aufsetzen und
+Administrieren wird jedoch ZooKeeper, eine weitere Software der Apache Foundation,
+benötigt. Dabei kann die Provision, Replikation und Konfiguration aller
+Kafka-Instanzen ausschließlich über Zookeeper ablaufen. Im Vergleich zu RabbitMQ
+ist der Aufwand einer Installation bei weniger Instanzen hierbei höher, allerdings
+vereinfacht Zookeeper dafür die Administration von sehr vielen Instanzen.
+Der offizielle Client ist ebenfalls nur für Java/Scala verfügbar, es
+gibt jedoch eine Reihe an Drittanbieterbibliotheken, die von Apache empfohlen werden.
+Die Kompatibilität ist in Tabelle \ref{compability:table} dargestellt.
+Kafka unterstützt das verbreitete AMQP-Protokoll nicht. Es setzt stattdessen
+auf eine Eigenentwicklung. Ist die Unterstützung also eine harte Anforderung,
+muss auf Drittanbieterbibliotheken zurückgegriffen werden, wobei man wiederum
+Performanceverluste, Kompatibilitätsprobleme usw. in Kauf nehmen muss. \cite{KafkaClients:online,ApacheKa84:online}
+
+\paragraph{Routing}
+Wie bereits erwähnt, basiert das Routing von Kafka auf Topics. Hierbei sind
+zahlreiche Konfigurationen für einzelne Topics möglich.
+Unter anderem kann konfiguriert werden, wie lange Nachrichten vorgehalten
+werden, wie viel Speicher für sie reserviert wird, ihre maximale Länge, uvm.
+
+Die versendeten Nach\-rich\-ten bestehen aus \textit{key}, \textit{value} und einem
+Zeitstempel. Sie enthalten nicht die Partition, in der sie veröffentlicht werden.
+Bei beispielsweise einer Partition pro Topic versendet stattdessen der Producer
+die Nachrichten direkt an eine Partition.
+\paragraph{Besonderheiten}
+Bei klassischen Publish-Subscribe Message Brokern ist es unüblich, dass
+Nach\-rich\-ten vorgehalten werden und mehrmals abgerufen werden können. Dies
+wird jedoch durch die Verwendung einer Queue ermöglicht. Das kann bei der
+Verwendung von Kafka als MOM tatsächlich auch zu weiteren Vorteilen führen.
+Beispielsweise gibt es so keinen architekturbedingten Nachrichtenverlust, wenn Clients
+ausfallen. Diese können die Bearbeitung der Nachrichten dank der Queue zu einem
+späteren Zeitpunkt fortsetzen.
+
+Des Weiteren besitzt Kafka APIs, die gezielt Import und Exporte zu Big-Data
+Speichersystemen unterstützen. Davon profitieren Systeme, die sehr große Datenmengen
+verarbeiten und kommunizieren müssen, wie im Szenario von Event Sourcing.
+
+\paragraph{Analyse nach Eigenschaftenkatalog}
+Kafka ist \textbf{at least once} zuzuordnen, wenn es um
+Zustellungsgarantien geht. Da die Consumer Nachrichten selbstständig und auch
+mehrfach abrufen können, ist davon auszugehen, dass Kafka nicht in die Gruppen
+\textit{at most once} oder \textit{exactly once} eingeordnet werden kann. \cite{ApacheKa84:online}
+
+Aufgrund von Kafka's Partitionen liegt eine \textbf{partitioned ordering}
+Garantie vor. Zwar ist in den einzelnen Partitionen eine absolute Ordnung, allerdings
+kann beispielsweise bei Topic-basierter Partitionierung eine spätere Nachricht
+in einem selten gebrauchten Topic weiter vorne stehen als eine frühere in einem
+größeren Topic.
+Durch die Partitionen wird eine Replikation von Kafka vereinfacht. Hinzu kommt
+eine einfache Skalierbarkeit mit Zookeeper. Im Detail wird
+pro Cluster, also einer Menge von zusammenarbeitenden Kafka-Instanzen, manuell ein
+Anführer bestimmt, der dann alle Entscheidungen über Verteilung von Replikationen
+von Partitionen über die Instanzen trifft. Dies bewirkt, dass bei Ausfall einer
+Instanz immer noch ein Replika übernehmen kann. \cite{ApacheKa84:online}
+
+Gerade im Bereich Durchsatz kann Kafka jedoch besonders glänzen. Da die Queue und
+Routing simpel gehalten sind, werden sehr hohe Durchsätze erreicht.
+Dabei wirkt sich die Anzahl an Partitionen indirekt proportional auf den Durchsatz aus.
+Es gibt mehrere Benchmarks, die die Performance von Kafka belegen.
+Grundsätzlich sind Schreibraten von ungefähr 2.000.000 Nachrichten pro Sekunde
+auf durchschnittlicher Hardware möglich. Allerdings ist die Latenz von Kafka
+nicht stabil \cite{Linkedin:online, dobbelaere2017kafka}.
+\paragraph{Zuordnung zu Use Cases}
+Aufgrund der beschriebenen architekturellen Gegebenheiten Kafkas ist dieses für
+einige Use Cases besonders geeignet, für andere dafür eher weniger.
+Beispielsweise sollte das System keine hohen Anforderungen an das Routing mit sich bringen,
+da dies bei Kafka überaus simpel gehalten ist. Allerdings ergeben sich dadurch immense
+Performancegewinne, von denen beispielsweise Microservices oder Event Sourcing Szenarien
+sehr profitieren können. Des Weiteren können bei Kafka Nachrichten nachträglich erneut
+abgerufen werden, was es stark von anderen Implementierungen abhebt.
+Oftmals wird Kafka auch wegen seiner hohen Performance gewählt. Diese liegt im
+Bereich des fünffachen von RabbitMQ \cite{dobbelaere2017kafka}.
+Da keine AMQP-Unterstützung vorhanden ist, wird man jedoch im Enterprise Umfeld
+selten Kafka vorfinden.

@@ -1,0 +1,159 @@
+\input{config/preamble}
+% ------------------------------------------------------------------
+% DOKUMENT
+% ------------------------------------------------------------------
+% Verwendet von: (Abstract, erste Seite eines Kapitels, Verzeichnisse, Leerseiten)
+
+\begin{document}
+
+\newshadetheorem{challenge}{Challenge}[section]
+
+% standard definition theorem
+% \theoremstyle{definition}
+\newshadetheorem{defs}{Definition}[section]
+
+% \newmdtheoremenv[
+%    hidealllines=true,
+%    innerleftmargin=4pt,%
+%    innerrightmargin=10pt,%
+%    innertopmargin=4pt,%
+%    innerbottommargin=4pt,%
+%    backgroundcolor=gray!10,%
+%    skipbelow=\baselineskip,%
+%    skipabove=\baselineskip]{defs}{Definition}[section]
+% \crefname{defs}{Definition}{Definitions}
+ 
+%\theoremstyle{corollary}
+\newshadetheorem{cors}[defs]{Corollary}
+
+\setcounter{secnumdepth}{3}
+\definecolor{shadethmcolor}{rgb}{.97,.97,.97}   % Farbe des Hintergrundes 
+
+% \theoremstyle{plain}
+% \theoremsymbol{\ensuremath{\clubsuit}}
+% \theoremseparator{.}
+% \theoremprework{\bigskip\hrule}
+% \theorempostwork{\hrule\bigskip}
+% \newtheorem{Definition}{Definition}
+
+
+
+% ------------------------------------------------------------------
+% FRONT
+% ------------------------------------------------------------------
+
+\pagenumbering{roman}\setcounter{page}{1}
+%\pagestyle{plain}
+
+% ------------------------------------------------------------------------------------------------------
+% TITLE
+% ------------------------------------------------------------------------------------------------------
+
+\include{titlepage}
+% ------------------------------------------------------------------------------------------------------
+% TABLE OF CONTENTS
+% ------------------------------------------------------------------------------------------------------
+\include{chapters/intro/intro}
+\chapter*{Danksagung}
+An dieser Stelle möchte ich meinem Firmenbetreuer Fabian Zintgraf danken,
+der maßgeblich zur Inspiration der Arbeit beigetragen und mich stets unterstützt hat.
+Der Austausch über die Inhalte meiner Arbeit mit ihm und dem Team des CHECK24
+Versicherungscenters waren von unschätzbarem Wert.
+
+\cleardoublepage
+\tableofcontents
+\cleardoublepage
+ 
+% ------------------------------------------------------------------------------------------------------
+% ABSTRACT
+% ------------------------------------------------------------------------------------------------------
+\pagenumbering{arabic}\setcounter{page}{1}
+\chapter{Einführung}
+\label{intro:einleitung}
+\include{chapters/intro/motivation}
+\include{chapters/intro/problem}
+%\insertemptypage
+
+% ------------------------------------------------------------------
+% MAIN MATTER
+% ------------------------------------------------------------------
+
+
+% ------------------------------------------------------------------------------------------------------
+% PART I
+% ------------------------------------------------------------------------------------------------------
+\cleardoublepage
+\label{part:Message Broker}
+\include{chapters/brokers/brokers}
+\include{chapters/brokers/definition}
+\include{chapters/brokers/advantages}
+\include{chapters/brokers/problems}
+\include{chapters/brokers/scenarios}
+% \insertemptypage
+
+% ------------------------------------------------------------------------------------------------------
+% PART II
+% ------------------------------------------------------------------------------------------------------
+\cleardoublepage
+\chapter{Vergleich}
+\label{part:comparison}
+\include{chapters/formal}
+\include{chapters/implementations/implementations}
+\include{chapters/implementations/kafka}
+\include{chapters/implementations/rabbitmq}
+%\insertemptypage
+
+% ------------------------------------------------------------------------------------------------------
+% PART III
+% ------------------------------------------------------------------------------------------------------
+\cleardoublepage
+\include{chapters/check24}
+%\insertemptypage
+
+% ------------------------------------------------------------------------------------------------------
+% PART IV
+% ------------------------------------------------------------------------------------------------------
+\cleardoublepage
+\include{chapters/ending}
+%\insertemptypage
+
+% ------------------------------------------------------------------
+% VERZEICHNISSE
+% ------------------------------------------------------------------
+
+\chapter*{Anhang}
+\label{ch:annex}
+
+% Literaturverzeichnis
+\cleardoublepage
+% \nocite{*}
+\printbibliography
+% Abk�rzungen
+
+\cleardoublepage
+\printglossaries
+
+% Abbildungsverzeichnis
+\cleardoublepage
+\listoffigures
+
+% Tabellenverzeichnis
+\cleardoublepage
+\listoftables
+
+%% Optionale Verzeichnisse -- bei Bedarf einkommentieren
+% Listingsverzeichnis
+%\cleardoublepage
+%\lstlistoflistings
+
+% Algorithmenverzeichnis
+%\cleardoublepage
+%\listofalgorithms
+
+% ------------------------------------------------------------------
+% ANHANG
+% ------------------------------------------------------------------
+
+% \cleardoublepage
+\include{appendix}
+\end{document}

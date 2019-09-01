@@ -1,0 +1,36 @@
+\label{Message Broker:scenarios}
+\section{Typische Anwendungsszenarien}
+Es lassen sich einige Anwendungsbeispiele zusammentragen, die besonders von der
+Verwendung einer MOM profitieren.
+
+\paragraph{Microservice-Architekturen}
+Unter einem \textit{Microservice} versteht man einen unabhängigen Prozess, der
+in einer \textit{Microservice-Architektur} eine einzelne bestimmte Aufgabe erfüllt.
+Dabei ist eine Microservice-Architektur eine verteilte Anwendung, welche
+ausschließlich aus Microservices besteht \cite{fowler2005micro}.
+Es müssen also viele kleinere Anwendungen miteinander kommunizieren.
+Hier kann mit einer MOM beispielsweise erreicht werden, dass nicht jeder
+Microservice die Adressen seiner Kommunikationspartner kennen muss. Das
+erleichtert unter anderem die Integration neuer Microservices.
+
+\paragraph{IoT}
+Auch im Bereich \textit{Internet of Things}, in dem viele leistungsschwache Geräte
+permanent mit dem Internet verbunden sind, sind MOMs von Vorteil. Soll zwischen
+vielen Geräten untereinander kommuniziert werden, greifen oben genannte Vorteile \cite{razzaque2016middleware}.
+Da dieser Trend gerade in den letzten Jahren Einzug in viele Privathaushalte findet,
+hat das Thema MOM auch eine wirtschaftliche Relevanz.
+Dabei kann unter anderem von der erhöhten Skalierbarkeit der Kommunikation mit
+einer MOM im Vergleich zur direkten Kommunikation profitiert werden.
+
+\paragraph{Event Sourcing}
+Event Sourcing beschreibt einen Ansatz, wie Datensätze, die häufigen Änderungen
+ausgesetzt sind, programmatisch behandelt werden können. Hierbei wird für jede
+Änderung ein sogenanntes \textit{Event} erstellt, welches die Änderungen zum vorherigen
+Event enthält. Dabei ist es meist sinnvoll, wenn andere Teilanwendungen diese Events
+erhalten oder diese zumindest zentral abgespeichert werden.
+Grundsätzlich ist Event Sourcing im Kontext von Messaging nicht strikt
+von Microservices bzw. allgemein aufgetrennten Anwendungen trennbar, allerdings
+ist dieses Pattern in den letzten Jahren so populär geworden, dass speziell dafür
+geeignete Broker existieren \cite{fowler2005event,ApacheKa84:online}.
+Event Sourcing kann hier besonders von MOMs mit einer Queue, die permanente
+Speicherung anbietet, profitieren, da hier alle Events abgelegt werden können.

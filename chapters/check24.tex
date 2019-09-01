@@ -1,0 +1,191 @@
+\chapter{Fallstudie}
+\label{part:check24}
+\section{Ausgangssituation}
+Im Rahmen der Arbeit soll wie bereits erwähnt der Eigenschaftenkatalog mithilfe
+eines Fallbeispiels evaluiert werden.
+Hierbei ist dieses Szenario durch den Firmenbetreuer CHECK24
+Versicherungsservice GmbH gegeben.
+
+% Ist Zustand
+Diese ist für das \textit{Versicherungscenter}, eine Webanwendung zum
+Verwalten und Vergleichen von Versicherungen und Dokumenten, zuständig.
+Kunden können hier abgeschlossene Verträge inklusive aller damit verbundenen
+Dokumente und Informationen einsehen und sogar selbst Fremdverträge hinzufügen,
+um diese dort zu verwalten.
+Dabei durchläuft ein Vertrag, sobald er online abgeschlossen oder hinzugefügt
+wurde, eine Reihe von Zustandsänderungen. Es können beispielsweise von
+Versicherungen Daten angefordert werden, um vorhandene Daten zu ergänzen, oder
+Kunden können neue Angaben machen. Auch bei Vertragsverlängerungen oder
+Kündigungen ändern sich Daten. Hierbei wird diese Arbeit vollständig von
+Microservices erledigt, und basiert teilweise auf Daten und APIs anderer Teams.
+
+Die Microservices laufen hierbei in jeweils ihrem eigenen Dockercontainer.
+Ein Dockercontainer ist eine vom Betriebssystem getrennte, virtualisierte
+Umgebung, in der eine Anwendung inklusive aller Abhängigkeiten betrieben werden
+kann \cite{docker:online}.
+Zudem werden für jeden Microservice zwei Instanzen betrieben, und jede Anfrage
+durch ein Loadbalancing geroutet. Dabei wird zusätzlich auf Seite der
+Microservices verhindert, dass zweimal der gleiche Request verarbeitet wird.
+
+% Neue Anforderungen
+Nun möchten die Entwickler und vor allem auch andere Teams in Zukunft
+nachverfolgen können, wann welche Änderungen gemacht wurden. Momentan ist dies
+nicht möglich, da Verträge ein einfaches Datenbankmodell sind. Zwar gibt es
+Datumsfelder beispielsweise für ein Kündigungsdatum, allerdings sind viele
+Änderungen im Nachhinein nicht nachvollziehbar. Es wäre nicht nur übersichtlicher
+für die Versicherungen, Kundenberater und anderen Teams, wenn man die einzelnen
+Änderungen nachvollziehen könnte, es würde auch das Debugging wesentlich
+vereinfachen, da man feststellen könnte, an welcher Stelle ein Fehler entstanden
+ist.
+
+Daher wird das Vertragsmodell auf Event Sourcing umgestellt werden.
+Hierbei wird, wie bereits in Abschnitt \ref{Message Broker:scenarios} erläutert,
+jede Änderung als Event-Objekt mit zugehörigem Datum gespeichert.
+Danach ist eine Rekonstruktion möglich, da die Änderungen in der richtigen
+Reihenfolge hintereinander den aktuellen Zustand ergeben \cite{kleppmann2017designing}. Die Verwendung einer
+Message Oriented Middleware ist in diesem Fall ein offensichtlicher Schritt,
+da viele einzelne Anwendungen immer wieder Änderungen beitragen, und alle
+anderen Anwendungen diese zeitnah erhalten sollen. Daher muss eine konkrete
+Implementierung gewählt und integriert werden. Mithilfe der zuvor aufgestellten
+Modelle werden nun die Anforderungen erarbeitet und eine Implementierung
+empfohlen.
+
+\section{Anforderungsanalyse}
+Die beschriebenen Szenarien, Microservices und Event Sourcing, geben schon
+einen ersten Hinweis auf eine geeignete Implementierung.
+Um allerdings den vorhin aufgestellten Eigenschaftenkatalog optimal zu
+verwenden, sollten zunächst die Anforderungen im Detail analysiert werden.
+
+In Bezug auf Zustellgarantien sind folgende Beobachtungen zu machen. Da teilweise
+wichtige Kundendaten bzw. Änderungen daran kommuniziert werden, darf auf keinen
+Fall eine Nachricht verloren gehen. \textit{At least once} scheint angebracht zu
+sein. Eine Wiederholung von Nachrichten sollte jedoch eingeplant werden und wird zu
+zusätzlichem Implementierungsaufwand führen. Da jedoch die Events üblicherweise
+mit einem Timestamp versehen sein werden, sollte ein Filter bei den Clients
+trivial sein, da davon ausgegangen werden kann, dass keine zwei Änderungen
+gleichen Inhalts in der gleichen Millisekunde stattfinden.
+
+Da Events im Nachhinein abgerufen werden müssen, um den aktuellen Zustand zu
+berechnen, muss die Implementierung eine Queue mit permanenter
+Speichermöglichkeit anbieten.
+Eine Ordnung der Nachrichten ist in diesem Szenario keine Primäranforderung. Zwar
+wäre es schlecht, wenn eine Nachricht über eine Änderung einer Versicherung vor der
+Nachricht über ihre Erstellung ankommt, allerdings wird keine \textit{total order}
+benötigt. Da bei der Erstellung der Events ein Zeitstempel abgespeichert wird,
+kann die korrekte Abfolge von Events auch im Nachhinein noch rekonstruiert werden.
+
+Da das Versicherungscenter ein wachsender Geschäftszweig der CHECK24-Gruppe ist,
+ist Skalierung eine große Herausforderung. Eine einfache Lösung, die auch Mittel für
+Hochverfügbarkeit mit sich bringt, ist gewünscht. Ebenso ist in naher Zukunft
+mit hohen Lasten zu rechnen. Eine MOM kann hierbei unabhängig vom restlichen
+System skaliert werden, da die Microservices eine Mehrfachbearbeitung von
+Nachrichten verhindern. So können beliebig viele Instanzen eines Services die
+gleiche Nachricht empfangen, ohne dass es zu Problemen kommt.
+So wird für eine MOM eine unabhängige Skalierung ermöglicht.
+
+Ein fortgeschrittenes Routing wird nicht benötigt. Da die Kommunikation 
+bisher über ein Datenbankmodell bzw. über HTTP-Calls erfolgte, werden keine
+komplexen Routen verwendet. Das primäre Ziel ist, die momentane Lösung durch eine
+zukunftstauglichere zu ersetzen, nicht den Funktionsumfang zu erweitern. Da
+außerdem die Middleware nur von einem Team und momentan ca. 100 Microservices
+verwendet wird, ist das Routing trivial.
+
+Eine stabile Latenz ist teilweise wichtig.
+Für einen Kunden macht es keinen großen Unterschied, ob er die Vertragsdokumente,
+die eine Versicherungsgesellschaft bereitgestellt hat, einige Millisekunden
+später sieht. Ebenso verhält es sich bei der Kündigung oder der
+Abschlussbestätigung seitens der Versicherung.
+Es verhält sich allerdings anders, sobald der Kunde seine Verträge betrachtet.
+Wird der aktuelle Vertragszustand aus allen Events berechnet, und dauert dies
+sehr lange, so muss der Kunde auch länger darauf warten. Daher sollte in dieser
+Hinsicht eine stabile Latenz gewährleistet sein.
+
+Hinsichtlich einer Queue ist eine langfristige Speichermöglichkeit
+wünschenswert. Eventuell können zu einem späteren Zeitpunkt Caching-Lösungen
+implementiert werden, oder der Verlauf ist für Verträge eines gewissen Alters
+nicht mehr relevant. Dies kann allerdings erst in der Zukunft abgewogen werden.
+Bis dahin sollten keinesfalls Verträge gelöscht werden, die noch nicht permanent
+in einer anderen Speicherlösung abgelegt wurden.
+Da für solche Datenmengen die Speicherung im Arbeitsspeicher sehr teuer werden
+kann und die Geschwindigkeit ausreicht, genügt die Speicherung auf Festplatte.
+
+Somit sind die in Abschnitt \ref{formal} erarbeiteten
+Kriterien betrachtet und nach ihrer Wichtigkeit beurteilt worden. Dieses Ergebnis
+ist nochmals in Tabelle \ref{requirementsmatrix} festgehalten.
+
+\begin{table}[b]
+	\centering
+	\begin{tabular}{|l|l|}
+		\hline
+		\textbf{Eigenschaft}      & \textbf{Anforderung?}              \\ \hline
+		Standardisierte Protokolle & nein                               \\ \hline
+		Clientbibliotheken & Javascript \\ \hline
+		Möglichkeit zur Skalierung & unabhängig \\ \hline
+		Hoher Durchsatz           & ja \\ \hline
+		Stabile Latenz            & teilweise ja \\ \hline
+		Routing & Topic ausreichend \\ \hline
+		Zustellgarantien           & \textit{at least once} ausreichend \\ \hline
+		Speicherort               & Festplatte bevorzugt               \\ \hline
+		Langzeitspeicherung       & ja                   \\ \hline
+		Ordnungsgarantien          & partitioned                        \\ \hline
+	\end{tabular}
+	\caption{Anforderungstabelle CHECK24 Versicherungsservice GmbH}
+	\label{requirementsmatrix}
+\end{table}
+
+\section{Empfehlung}
+Aufgrund der im vorhergehenden Abschnitt aufgestellten Anforderungen kann nun
+eine Empfehlung ausgesprochen werden.
+Die Punkte deuten fast ausschließlich auf Apache Kafka hin.
+Es eignet sich sehr gut, um eine Microservice-In\-fra\-struk\-tur wie die oben
+beschriebene zu betreiben. Zudem eignet es sich dank der Langzeitspeicherung für
+Event Sourcing.
+Werden Änderungen an Verträgen gemacht, können diese als Message in Kafka
+abgelegt werden, und Worker können diese dann stückweise abarbeiten, bzw. andere
+Anwendungen diese abrufen und sind damit immer auf dem neuesten Stand.
+Somit eignet sich in diesem Szenario Kafka besser als RabbitMQ. Eine
+Erweiterung um die Routing-Kapazitäten RabbitMQs ist vorerst nicht notwendig.
+Es entfällt also auch eine Erweiterung um das Routing von RabbitMQ.
+
+Allerdings ergeben sich mit Kafka auch Nachteile. Beispielsweise ist wie
+bereits erwähnt das Hosting nicht trivial. Es werden Zookeeper bzw.
+eine Sammlung von Skripten verwendet, um Kafka zu administrieren.
+Auch würde dies eine Abweichung zum sonstigen Hosting bedeuten,
+da die Microservices alle in sauber getrennten, eigenen Dockercontainern
+betrieben werden.
+Dem Problem kann jedoch entgegengewirkt werden, indem man Kafka auch
+in einem Dockercontainer betreibt. Hierbei sollte bei der Skalierung dafür
+gesorgt werden, dass mindestens zwei verbundene Instanzen auf mehr als
+einem physischen Server laufen.
+
+Des Weiteren werden mit Kafka keine stabilen Latenzen erreicht
+\cite{Linkedin:online}. Dies kann zu
+Problemen führen, wenn ein Kunde seine Vertragsdaten im Frontend betrachtet.
+Hierbei werden vom zugehörigen Microservice die Daten bereitgestellt. Braucht
+dieser also zu lange, um alle Events für einen Vertrag abzurufen, muss der
+Kunde länger warten.
+
+Dieses Problem kann auf zwei Arten gelöst werden.
+Beispielsweise kann der aktuelle Zustand in einer Datenbank mitgeführt werden.
+Bei einem Änderungsevent muss so nur ein simpler Microservice diesen Eintrag
+des jeweils aktuellen Zustands aktualisieren. Auf diese Weise können
+Microservices, die den aktuellen Zustand eines Vertrags benötigen, diesen sehr
+schnell abrufen.
+Der Aufwand hierfür ist gering, besagte Microservices
+können weiterhin aus der bereits existierenden Datenbank abfragen, und ein
+simpler Microservice, der bei Change Events diese updated, ist dank der MOM
+schnell integriert. Somit kann trotz instabiler Latenzen Kafka verwendet werden.
+
+Die zweite Lösung wäre, RabbitMQ aufgrund seiner geringen Latenzen zu verwenden,
+und die Speicherung der Events in einer externen Datenbank vorzunehmen.
+Hierbei würde man von der erleichterten Administration von RabbitMQ profitieren,
+und gleichzeitig eine ausreichend schnelle Langzeitspeicherung selbst
+hinzufügen. Allerdings wäre der Gesamtaufwand wesentlich höher, als der Aufwand
+der vorherigen Lösung. Dies würde also nur in Frage kommen, wenn eine
+langfristige Speicherung von Events in Kafka ungeeignet ist und der Mehraufwand
+in Kauf genommen werden kann.
+
+Die Empfehlung fällt auf Kafka. Hiermit können mit geringem Aufwand die Anforderungen
+befriedigt werden. Unzureichend erfüllte Anforderungen können ebenfalls einfach
+erfüllt werden. Andere Lösungen sind möglich, stellen jedoch einen erheblichen
+Mehraufwand dar.

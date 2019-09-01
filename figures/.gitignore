@@ -1,0 +1,2 @@
+# Allow PDF documents in this directory
+!**/*.pdf

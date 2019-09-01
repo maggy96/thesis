@@ -1,0 +1,69 @@
+\chapter{Schluss}
+\label{part:end}
+\section{Fazit}
+In dieser Arbeit wurden die Grundlagen von Message Oriented Middlewares
+beleuchtet. Dabei wurden der allgemeine Aufbau und die Funktion
+einzelner Komponenten erklärt. Vor- und Nachteile einer MOM wurden
+abgewägt.
+Es wurden außerdem einige praxisnahe Szenarien, in denen oft eine Message
+Oriented Middleware Einsatz findet, aufgezeigt. Hierbei wurde erklärt,
+warum sie jeweils von dieser Verwendung profitieren.
+
+Davon ausgehend wurde ein Eigenschaftenkatalog erarbeitet,
+mithilfe dessen eine erleichterte Analyse verschiedener Implementierungen
+ermöglicht wurde. Dieser umfasst die in der Praxis wichtigen Kriterien,
+in denen sich Implementierungen unterscheiden können. Dabei wurde jede
+dieser Eigenschaften verständlich begründet, sodass selbst fachfremde
+sie verwenden können, um eine Auswahl zu treffen.
+
+Anschließend wurden die verbreiteten Implementierungen analysiert und
+miteinander auf Grundlage dieses Eigenschaftenkatalogs verglichen.
+Zusätzlich wurde eine grundsätzlich verschiedene Neuentwicklung analysiert.
+Hierdurch wurde gezeigt, dass der Katalog anwendbar ist
+und auch für zukünftige Implementierungen genutzt werden kann.
+
+Zur Validierung des Eigenschaftenkatalogs wurde dieser abschließend auf ein
+praktisches Szenario angewendet. Eine Integration in den durch die CHECK24
+Versicherungsservice GmbH gegebenen Anwendungsfall wurde geplant und in
+allen Punkten des Katalogs untersucht. Anschließend wurde eine Empfehlung
+ausgesprochen. Diese wurde auch vom Rest des Teams nach gemeinsamer Analyse
+getragen.
+
+Die Arbeit informiert ausführlich über die führenden Implementierungen,
+gibt jedoch gleichzeitig ein Werkzeug mit an die Hand, mit dem Neuentwicklungen
+eingeordnet werden können. Wie demonstriert wurde, kann sie als Grundlage
+für Entscheidungen in echten Anwendungsfällen dienen.
+
+\section{Ausblick}
+Eine Message Oriented Middleware findet in vielen modernen Systemen Anwendung.
+Eine sauber getrennte, asynchrone, und vor allem performante
+Kommunikationslösung für Softwaresysteme wird auch in nächster Zukunft aus den
+meisten Systemen nicht wegzudenken sein.
+Dabei wächst das Angebot an Lösungen stetig. Die Spezialisierung der einzelnen
+Lösungen ist dabei hoch, die meisten Neuentwicklungen sind auf einen bestimmten
+Anwendungsfall zugeschnitten.
+Somit wäre es sicher interessant, den Vergleich dieser Arbeit auf weitere
+Implementierungen auszuweiten. Diese werden sich jedoch untereinander weniger
+stark unterscheiden als Kafka und RabbitMQ.
+
+Auch die neueste Entwicklung - Brokerlose MOMs - könnten mit den erarbeiteten
+Metriken leicht eingeschätzt werden, auch wenn ihre detaillierte Behandlung
+den Rahmen der Arbeit gesprengt hätte.
+Diese Entwicklung lohnt es sich jedoch in jedem Fall zu verfolgen.
+Dabei gibt es andere Mechanismen zu erforschen und optimieren, wie beispielsweise
+die zwingend notwendige Service Discovery, mit der solche Peer to Peer Systeme
+funktionieren. Da diese Entwicklungen noch relativ neu sind, wird hier in den
+nächsten Jahren noch viel weiterentwickelt werden.
+
+RabbitMQ sticht mit seinen Enterprise Eigenschaften hervor, aufgrund derer es
+trotz vergleichsweise niedrigem Durchsatz immer noch große Verbreitung findet.
+Ob RabbitMQ in naher Zukunft von einer anderen Implementierung abgelöst werden
+kann, die einen ähnlichen Support für viele Protokolle anbietet, bleibt
+spannend. Ebenso wäre eine Entwicklung interessant, die neue Architekturen,
+wie Peer to Peer MOMs, in Verbindung mit dem Support für standardisierte
+Protokolle bringt. Dies wäre beispielsweise für den IoT-Bereich relevant.
+
+Es lässt sich abschließend sagen, dass in den nächsten Jahren sicher noch viel
+auf dem Gebiet der Message Oriented Middleware passieren wird. Diese Arbeit hat
+eine Übersicht über den aktuellen Stand der Entwicklung gegeben, während die
+verwendeten Methoden auch in der Zukunft verwendet werden können.

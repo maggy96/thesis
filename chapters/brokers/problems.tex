@@ -1,0 +1,34 @@
+\section{Probleme und Herausforderungen}
+\label{Message Broker:challenges}
+Die Nutzung einer MOM bringt jedoch nicht nur Vorteile mit sich. Es gibt einige
+Punkte, die man bei der Planung berücksichtigen sollte.
+
+\paragraph{Sicherheit}
+Zwar sind viele Vorteile mit der Kommunikation über eine zentrale Instanz
+verbunden, allerdings ist damit auch jeder andere Teil der Anwendung davon
+abhängig. Fällt ein Broker bzw. die gesamte MOM aus, so kann dies beispielsweise
+dazu führen, dass gesendete und in der Queue vorgehaltene Nachrichten evtl.
+komplett verloren gehen.
+Dabei können also durch Ausfall eines einzigen Systems Daten des gesamten Systems
+verloren gehen.
+Ebenso muss für die Sicherheit eines weiteren Systems gesorgt werden. Kann ein
+Angreifer die Kontrolle über eine MOM übernehmen, hat er potentiell Zugriff auf
+alle Nachrichten, die über sie versendet werden. \cite{tanenbaum2007distributed}
+
+\paragraph{Betrieb}
+Mit einer MOM muss ein weiteres System regelmäßig gewartet und gepflegt werden.
+Außerdem müssen Themen wie High Availability und Skalierung bedacht werden.
+Zwar liefern die meisten Implementierungen Wege mit, diesen Themen zu begegnen,
+allerdings geschieht dies selten automatisch \cite{RabbitScaling:online}.
+Wenn unvorhersehbar eine große Nachrichtenmenge bei der MOM eingeht, ist
+ein reibungsloser Betrieb meist trotzdem wünschenswert.
+Damit Ausfälle bzw. Performanceengpässe überhaupt rechtzeitig bemerkt werden
+können, muss zusätzlich ein geeignetes Monitoring betrieben werden. \cite{dobbelaere2017kafka}
+
+\paragraph{Integration}
+Jedoch ist der Betrieb nicht die einzige Herausforderung. So muss beispielsweise
+für jeden Teilnehmer eine geeignete Schnittstelle zum Broker erstellt werden.
+Auch wenn die meisten Broker \textit{Libraries} in verschiedenen Sprachen zu
+Verfügung stellen, muss dies trotzdem erst einmal integriert werden \cite{KafkaClients:online}.
+Sollte die MOM nicht bereits bei der Konzeption eines Systems eingeplant worden
+sein, so entstehen Einführungskosten.

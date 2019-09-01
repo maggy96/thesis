@@ -1,0 +1,39 @@
+\section{Zielsysteme}
+\subsection{Anforderungen}
+Wie bereits im vorhergehenden Abschnitt erarbeitet, existieren einige
+Anwendungsfälle für die Verwendung einer Message-orientierten Middleware.
+Dabei sind die zugrunde liegenden Anforderungen größtenteils identisch.
+So haben die meisten Szenarios einen Bedarf für eine Zustellungsgarantie.
+Hierbei ist \textit{at least once} aus Perspektive der Performance wohl die
+am Einfachsten zu erreichende, wobei dadurch bei den Clients gefiltert werden
+muss. Auch wünscht man sich in den meisten Fällen eine möglichst einfache
+Skalierungsmöglichkeit und High Availability. Dies alles sind sehr generelle
+Punkte, die in den meisten Fällen von der jeweiligen Software erfüllt werden.
+Beispielsweise bieten RabbitMQ und Kafka beite Methoden für Skalierung und High
+Availability.
+
+Die wichtigen Anforderungen, die in einem spezifischen Anwendungsfall also
+erarbeitet müssen, sind Sonderfälle, einzelne Spezielle Garantien und
+Anforderungen, die nicht jeder generische Broker erfüllen kann.
+Bei den vorgestellten Implementierungen Kafka und RabbitMQ ist ein
+wesentlicher Unterschied beispielsweise die Speicherung von Nachrichten.
+In manchen Anwendungsfällen, wie zum Beispiel bei Event Sourcing, sollten
+Nachrichten (in diesem Fall Events) auch langfristig gespeichert werden.
+
+Eine weitere praxisnahe Anforderung ist Performance. Da diese zweigeteilt
+ist zwischen Latenz und Durchsatz kann man hier zwei Empfehlungen aussprechen.
+Kafka bietet soweit man sich im Rahmen der Empfohlenen Einstellungen und
+Verwendungsrichtlinien befindet, die größeren Durchsatzraten. RabbitMQ
+jedoch bietet von Haus aus eine Kontrolle über die Latenz an - ein Feature
+was Kafka nicht bieten kann. Liegt also eine Anwendung vor, in der es darauf
+ankommt, Daten sehr schnell durch das System zu propagieren, statt große Mengen
+davon, würde man hier eher zu RabbitMQ greifen. In den meisten Szenarien
+ist die Performance von RabbitMQ auch völlig ausreichend, daher ist dieser
+Vergleich zwischen Kafka und RabbitMQ eher weniger relevant.
+
+Ebenso wurde in Tabelle \ref{featurematrix} in diesem Sinne darauf geachtet,
+nur realitätsnahe Anforderungen darzustellen.
+Wir werden also in dem folgenden Anwendungsszenario gezielt Anforderungen,
+die nicht speziell benötigt werden bzw. von Kafka und RabbitMQ in einem
+vergleichbaren Maße erfüllt werden, nicht so ausführlich behandeln, wie
+die offensichtlichen Ausschlusskriterien und -anforderungen.

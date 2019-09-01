@@ -1,0 +1,64 @@
+\makeatletter
+\begin{titlepage}
+  \newgeometry{top=30mm,bottom=30mm,right=30mm,left=30mm}
+  \centering
+  % \vspace*{\fill}
+  \huge
+  \textsc{\@title}\par
+  \LARGE\@subtitle
+  \vspace*{10mm}
+
+  \LARGE{\@author}
+
+  \vspace*{10mm}
+
+  \LARGE{\textsc{\art}}\\
+
+  \large{%
+    \degreetext\\
+    \degree}
+
+  \vspace*{10mm}
+
+  \includegraphics[height=40mm]{figures/uni_siegel}
+
+  \vspace*{5mm}
+
+  \large
+  \universitaet\\
+  \vspace*{2mm}
+  \institut\\
+  \vspace*{2mm}
+  \professur\\
+  \vspace*{5mm}
+
+  \monat~\jahr
+  
+  \vspace*{\fill}
+  \includegraphics[width=.4\paperwidth]{figures/logo_CHECK24_transparent.png}
+  \includegraphics[width=.4\paperwidth]{figures/logo_SMDS_transparent.png}
+\end{titlepage}
+
+\restoregeometry
+\thispagestyle{empty}
+\vspace*{\fill}
+\textbf{\@title}
+\begin{tabbing}
+  \hspace*{4cm}\=\hspace*{12cm}\= \kill
+  Erstprüfer: \> \textbf{Prof.~Dr.~Bernhard~L.~Bauer}, Department of Computer Science,\\
+	\> University of Augsburg, Germany\\[2mm]
+	Zweitprüfer: \> \textbf{Prof.~Dr.~Bernhard~Möller}, Department of Computer Science,\\
+  \> University of Augsburg, Germany\\[2mm]
+  Betreuer: \> \textbf{M.Sc.~Melanie~Langemeier}, Department of Computer Science,\\
+  \> University of Augsburg, Germany\\[2mm]
+  Firmenbetreuer: \> \textbf{M.Sc.~Fabian~Zintgraf}, Team Lead IT,\\
+  \> CHECK24 Versicherungsservice GmbH, Germany\\[2mm]
+\end{tabbing}
+
+Copyright \copyright\ \@author, \place, \monat~\jahr
+\makeatother
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "TemplateSMDS"
+%%% End:
